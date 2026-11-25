@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de integrantes — Cuerpos Académicos y Grupo de Interés · LabNIE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --guinda:#9B2247;
+    --guinda-osc:#611232;
+    --verde:#1E5B4F;
+    --oro:#A57F2C;
+    --papel:#FFFFFF;
+    --panel:#F2EFEA;
+    --linea:#DEDAD2;
+    --texto:#1A1714;
+    --gris:#5A5650;
+    --radio:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--guinda);color:var(--texto);
+    font-family:"Noto Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;min-height:100vh;}
+  .wrap{max-width:720px;margin:0 auto;padding:32px 20px 72px;}
+
+  /* Encabezado */
+  .encabezado{background:var(--papel);border-radius:14px 14px 0 0;padding:24px 26px;
+    display:flex;align-items:center;justify-content:center;border-bottom:4px solid var(--oro);}
+  .encabezado img{display:block;width:100%;max-width:440px;height:auto;}
+
+  .cuerpo{background:var(--papel);border-radius:0 0 14px 14px;padding:30px 26px 34px;}
+  h1{font-size:clamp(23px,4vw,30px);font-weight:800;margin:0 0 10px;line-height:1.2;color:var(--guinda-osc);}
+  .subtitulo{color:var(--gris);font-size:15px;line-height:1.6;margin:0 0 6px;}
+
+  /* Secciones */
+  fieldset{border:none;margin:30px 0 0;padding:0;}
+  legend{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;letter-spacing:1.4px;
+    text-transform:uppercase;color:var(--guinda);margin-bottom:16px;padding:0;width:100%;}
+  legend .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;
+    background:var(--guinda);color:#fff;font-size:12px;letter-spacing:0;}
+  legend::after{content:"";flex:1;height:1px;background:var(--linea);}
+
+  .campos{display:flex;flex-direction:column;gap:18px;}
+  .fila{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .campo{display:flex;flex-direction:column;gap:7px;}
+  .campo > label, .etiqueta{font-size:12.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--texto);}
+  .req{color:var(--guinda);}
+  .ayuda{font-size:12.5px;color:var(--gris);line-height:1.5;}
+
+  input[type=text],input[type=email],input[type=tel],select,textarea{
+    width:100%;background:var(--panel);border:1px solid var(--linea);border-radius:8px;
+    padding:12px 14px;color:var(--texto);font-size:16px;outline:none;font-family:inherit;}
+  textarea{min-height:96px;resize:vertical;line-height:1.5;}
+  input:focus,select:focus,textarea:focus{border-color:var(--verde);box-shadow:0 0 0 3px rgba(30,91,79,.15);}
+  .invalido{border-color:#B3261E !important;box-shadow:0 0 0 3px rgba(179,38,30,.12) !important;}
+
+  /* Opciones tipo radio / checkbox */
+  .opciones{display:flex;flex-direction:column;gap:8px;}
+  .opciones.dos{display:grid;grid-template-columns:1fr 1fr;}
+  .opcion{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border:1px solid var(--linea);
+    border-radius:8px;background:var(--panel);cursor:pointer;font-size:14.5px;line-height:1.4;}
+  .opcion input{margin-top:3px;accent-color:var(--guinda);width:16px;height:16px;flex:none;}
+  .opcion:has(input:checked){border-color:var(--guinda);background:#FBF3F5;}
+
+  /* Tarjetas de propuestas */
+  .propuestas{display:flex;flex-direction:column;gap:12px;}
+  .propuesta{display:block;border:1.5px solid var(--linea);border-radius:var(--radio);background:var(--papel);
+    padding:16px 18px;cursor:pointer;transition:border-color .15s, box-shadow .15s;}
+  .propuesta:hover{border-color:#C9A3AF;}
+  .propuesta:has(input:checked){border-color:var(--guinda);box-shadow:0 0 0 3px rgba(155,34,71,.14);background:#FFFBFC;}
+  .propuesta .top{display:flex;gap:12px;align-items:flex-start;}
+  .propuesta input{margin-top:4px;accent-color:var(--guinda);width:18px;height:18px;flex:none;}
+  .tipo{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
+    padding:3px 8px;border-radius:999px;margin-bottom:6px;}
+  .tipo.caef{background:rgba(155,34,71,.1);color:var(--guinda-osc);}
+  .tipo.gi{background:rgba(30,91,79,.12);color:var(--verde);}
+  .propuesta h3{margin:0 0 4px;font-size:16.5px;line-height:1.35;color:var(--texto);}
+  .propuesta .resp{font-size:13px;color:var(--gris);margin-bottom:10px;}
+  .propuesta ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.5;color:var(--texto);}
+  .propuesta ul li{margin-bottom:3px;}
+  .propuesta ul b{color:var(--guinda-osc);}
+  .propuesta details{margin-top:10px;font-size:13.5px;}
+  .propuesta summary{cursor:pointer;color:var(--verde);font-weight:700;font-size:13px;}
+  .propuesta details p{color:var(--gris);line-height:1.6;margin:8px 0 0;}
+
+  .aviso{border-radius:8px;padding:12px 14px;font-size:13.5px;line-height:1.55;}
+  .aviso.info{background:rgba(30,91,79,.08);border:1px solid rgba(30,91,79,.25);color:#173F37;}
+  .aviso.alerta{background:rgba(165,127,44,.12);border:1px solid rgba(165,127,44,.45);color:#5A4413;}
+  .aviso.error{background:rgba(179,38,30,.08);border:1px solid rgba(179,38,30,.35);color:#7A1A14;}
+  .oculto{display:none !important;}
+
+  /* Explorador de propuestas */
+  .explorador{margin-top:26px;border:1px solid var(--linea);border-radius:12px;background:var(--panel);padding:18px;}
+  .explorador h2{margin:0 0 4px;font-size:18px;color:var(--guinda-osc);}
+  .explorador .intro{font-size:13.5px;color:var(--gris);margin:0 0 14px;line-height:1.5;}
+  .vistas{display:inline-flex;background:#fff;border:1px solid var(--linea);border-radius:999px;padding:3px;margin-bottom:14px;}
+  .vistas button{border:none;background:none;font-family:inherit;font-size:13px;font-weight:700;color:var(--gris);
+    padding:7px 16px;border-radius:999px;cursor:pointer;}
+  .vistas button[aria-selected=true]{background:var(--guinda);color:#fff;}
+  .pestanas{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:thin;}
+  .pestanas button{flex:none;max-width:230px;text-align:left;border:1px solid var(--linea);background:#fff;border-radius:9px;
+    padding:9px 12px;font-family:inherit;font-size:12.5px;line-height:1.35;color:var(--texto);cursor:pointer;}
+  .pestanas button .t{display:block;font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:3px;}
+  .pestanas button .t.caef{color:var(--guinda);}
+  .pestanas button .t.gi{color:var(--verde);}
+  .pestanas button[aria-selected=true]{border-color:var(--guinda);box-shadow:0 0 0 2px rgba(155,34,71,.18);}
+  .ficha{background:#fff;border:1px solid var(--linea);border-radius:10px;padding:20px;}
+  .ficha h3{margin:4px 0 4px;font-size:19px;line-height:1.3;}
+  .ficha .resp{font-size:13.5px;color:var(--gris);margin-bottom:14px;}
+  .ficha h4{font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--guinda);margin:16px 0 6px;}
+  .ficha p{margin:0;font-size:14.5px;line-height:1.65;}
+  .ficha .lgac-item{display:flex;gap:10px;padding:10px 12px;border-left:3px solid var(--oro);background:var(--panel);
+    border-radius:0 8px 8px 0;margin-bottom:8px;font-size:14px;line-height:1.5;}
+  .ficha .lgac-item b{flex:none;color:var(--guinda-osc);}
+  .btn-sec{margin-top:18px;background:#fff;color:var(--guinda);border:1.5px solid var(--guinda);border-radius:9px;
+    padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .btn-sec:hover{background:#FBF3F5;}
+  .tabla-wrap{overflow-x:auto;background:#fff;border:1px solid var(--linea);border-radius:10px;}
+  table.comparar{border-collapse:collapse;min-width:900px;width:100%;font-size:13px;line-height:1.5;}
+  table.comparar th,table.comparar td{padding:12px;border-bottom:1px solid var(--linea);vertical-align:top;text-align:left;}
+  table.comparar thead th{background:#FBF3F5;font-size:13.5px;color:var(--texto);}
+  table.comparar thead th .t{display:block;font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px;}
+  table.comparar tbody th{width:110px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--guinda);background:var(--panel);}
+  table.comparar tr:last-child td,table.comparar tr:last-child th{border-bottom:none;}
+  table.comparar .btn-mini{background:var(--guinda);color:#fff;border:none;border-radius:7px;padding:7px 12px;
+    font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+  .privacidad{margin-top:28px;}
+  .btn{margin-top:26px;width:100%;background:var(--guinda);color:#fff;border:none;border-radius:10px;
+    padding:15px 20px;font-size:15.5px;font-weight:700;cursor:pointer;letter-spacing:.3px;font-family:inherit;}
+  .btn:hover{background:#7d1a38;}
+  .btn:disabled{opacity:.55;cursor:not-allowed;}
+
+  .pie{margin-top:22px;text-align:center;color:rgba(255,255,255,.85);font-size:12.5px;line-height:1.6;}
+
+  #confirmacion{text-align:center;padding:56px 26px;}
+  #confirmacion .punto{width:16px;height:16px;border-radius:50%;background:var(--verde);margin:0 auto 18px;}
+  #confirmacion p{color:var(--gris);font-size:15px;line-height:1.6;max-width:480px;margin:10px auto 0;}
+
+  @media (max-width:620px){
+    .wrap{padding:16px 10px 56px;}
+    .encabezado{padding:16px;}
+    .cuerpo{padding:24px 18px 28px;}
+    .fila,.opciones.dos{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="encabezado">
+    <img src="logo_ensbcs.png" alt="Escuela Normal Superior del Estado de Baja California Sur «Profr. Enrique Estrada Lucero»">
+  </header>
+
+  <main class="cuerpo">
+    <div id="vista-formulario">
+      <h1>Registro de integrantes para Cuerpos Académicos en Formación y Grupo de Interés</h1>
+      <p class="subtitulo">Si te interesa sumarte a alguna de las propuestas institucionales, completa este formulario. Cada responsable se pondrá en contacto contigo.</p>
+
+      <section class="explorador" aria-labelledby="titulo-explorador">
+        <h2 id="titulo-explorador">Conoce las propuestas</h2>
+        <p class="intro">Revisa cada propuesta o compáralas lado a lado antes de registrarte. Cuando decidas, usa el botón «Quiero integrarme» y la propuesta quedará seleccionada en el formulario.</p>
+        <div class="vistas" role="tablist">
+          <button type="button" id="ver-fichas" aria-selected="true">Fichas</button>
+          <button type="button" id="ver-comparar" aria-selected="false">Comparar</button>
+        </div>
+        <div id="vista-fichas">
+          <div class="pestanas" id="pestanas" role="tablist"></div>
+          <div class="ficha" id="ficha"></div>
+        </div>
+        <div id="vista-comparar" class="oculto">
+          <div class="tabla-wrap"><table class="comparar" id="tabla-comparar"></table></div>
+        </div>
+      </section>
+
+      <form id="formulario" novalidate>
+
+        <!-- 1. Datos personales -->
+        <fieldset>
+          <legend><span class="num">1</span> Datos personales</legend>
+          <div class="campos">
+            <div class="campo">
+              <label for="nombre">Nombre completo <span class="req">*</span></label>
+              <input type="text" id="nombre" placeholder="Nombre y apellidos" autocomplete="name" required>
+            </div>
+            <div class="fila">
+              <div class="campo">
+                <label for="correo">Correo institucional <span class="req">*</span></label>
+                <input type="email" id="correo" placeholder="nombre@normales.mx" autocomplete="email" required>
+              </div>
+              <div class="campo">
+                <label for="celular">Celular <span class="req">*</span></label>
+                <input type="tel" id="celular" placeholder="10 dígitos" inputmode="numeric" maxlength="14" required>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 2. Situación académica -->
+        <fieldset>
+          <legend><span class="num">2</span> Situación académica</legend>
+          <div class="campos">
+            <div class="fila">
+              <div class="campo">
+                <label for="sede">Sede de adscripción <span class="req">*</span></label>
+                <select id="sede" required>
+                  <option value="" disabled selected>Selecciona tu sede…</option>
+                  <option>La Paz</option>
+                  <option>Extensión Ciudad Constitución</option>
+                  <option>Extensión Los Cabos</option>
+                </select>
+              </div>
+              <div class="campo">
+                <label for="grado">Último grado académico <span class="req">*</span></label>
+                <select id="grado" required>
+                  <option value="" disabled selected>Selecciona…</option>
+                  <option>Licenciatura</option>
+                  <option>Maestría</option>
+                  <option>Doctorado</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="campo">
+              <span class="etiqueta">Tipo de nombramiento <span class="req">*</span></span>
+              <div class="opciones" id="nombramiento">
+                <label class="opcion"><input type="radio" name="nombramiento" value="40 horas en la Escuela Normal" data-ptc="si"> 40 horas en la Escuela Normal</label>
+                <label class="opcion"><input type="radio" name="nombramiento" value="30 horas en la Escuela Normal" data-ptc="si"> 30 horas en la Escuela Normal</label>
+                <label class="opcion"><input type="radio" name="nombramiento" value="20 horas en la Escuela Normal + 10 o más en educación básica" data-ptc="si"> 20 horas en la Escuela Normal y 10 o más en educación básica</label>
+                <label class="opcion"><input type="radio" name="nombramiento" value="Interinato con alguna de las características anteriores" data-ptc="interino"> Interinato con alguna de las características anteriores</label>
+                <label class="opcion"><input type="radio" name="nombramiento" value="Otro (horas por asignatura u otro)" data-ptc="no"> Otro (horas por asignatura u otro)</label>
+              </div>
+              <div class="ayuda">Según la convocatoria 2026 de la DGESuM, se consideran profesores de tiempo completo en escuelas normales los tres primeros casos. Un interinato cuenta si cumple esas características y tiene al menos cuatro años de antigüedad.</div>
+            </div>
+
+            <div class="campo">
+              <span class="etiqueta">¿Cuentas con reconocimiento de Perfil Deseable PRODEP? <span class="req">*</span></span>
+              <div class="opciones dos" id="perfil">
+                <label class="opcion"><input type="radio" name="perfil" value="Sí, vigente"> Sí, vigente</label>
+                <label class="opcion"><input type="radio" name="perfil" value="En proceso / lo solicitaré"> En proceso o lo solicitaré</label>
+                <label class="opcion"><input type="radio" name="perfil" value="No"> No</label>
+                <label class="opcion"><input type="radio" name="perfil" value="Lo tuve, no está vigente"> Lo tuve, pero no está vigente</label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 3. Propuesta -->
+        <fieldset>
+          <legend><span class="num">3</span> Propuesta a la que deseas integrarte</legend>
+          <div class="campos">
+            <div class="propuestas" id="propuestas"></div>
+
+            <div class="campo oculto" id="bloque-participacion">
+              <span class="etiqueta">Forma de participación <span class="req">*</span></span>
+              <div class="opciones dos" id="participacion">
+                <label class="opcion"><input type="radio" name="participacion" value="Integrante"> <span id="txt-integrante">Integrante</span></label>
+                <label class="opcion"><input type="radio" name="participacion" value="Colaborador(a)"> Colaborador(a)</label>
+              </div>
+              <div class="ayuda">Ante PRODEP, cada profesor solo puede ser integrante de un Cuerpo Académico, pero puede colaborar con otros.</div>
+            </div>
+
+            <div class="aviso alerta oculto" id="aviso-ptc"></div>
+
+            <div class="campo oculto" id="bloque-lgac">
+              <span class="etiqueta">Línea(s) en las que trabajarías <span class="req">*</span></span>
+              <div class="opciones" id="lgac"></div>
+            </div>
+
+            <div class="campo oculto" id="bloque-otra">
+              <label for="otra">¿Te interesa colaborar también con otra propuesta? <span style="text-transform:none;font-weight:400;color:var(--gris)">(opcional)</span></label>
+              <select id="otra">
+                <option value="">No, por ahora</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 4. Aportación -->
+        <fieldset>
+          <legend><span class="num">4</span> Tu aportación</legend>
+          <div class="campos">
+            <div class="campo">
+              <label for="tema">Tema, proyecto o interés de investigación que aportarías <span class="req">*</span></label>
+              <textarea id="tema" placeholder="Describe brevemente en qué estás trabajando o qué te gustaría investigar." required></textarea>
+            </div>
+            <div class="campo">
+              <label for="produccion">Producción académica reciente <span style="text-transform:none;font-weight:400;color:var(--gris)">(opcional)</span></label>
+              <textarea id="produccion" placeholder="Artículos, capítulos, ponencias, tesis dirigidas, proyectos o materiales de los últimos tres años."></textarea>
+            </div>
+            <div class="campo">
+              <label for="comentarios">Comentarios <span style="text-transform:none;font-weight:400;color:var(--gris)">(opcional)</span></label>
+              <textarea id="comentarios" placeholder="Cualquier información que quieras compartir con la persona responsable." style="min-height:72px"></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="privacidad">
+          <label class="opcion" id="bloque-privacidad">
+            <input type="checkbox" id="privacidad">
+            <span>Acepto que mis datos se usen únicamente para la integración y el registro de los Cuerpos Académicos y del Grupo de Interés del LabNIE, y que se compartan con la persona responsable de la propuesta que elegí. <span class="req">*</span></span>
+          </label>
+        </div>
+
+        <div class="aviso error oculto" id="mensaje-error" role="alert" style="margin-top:18px"></div>
+
+        <button type="submit" class="btn" id="btn-enviar">Enviar registro</button>
+      </form>
+    </div>
+
+    <div id="confirmacion" class="oculto">
+      <div class="punto"></div>
+      <h1>¡Registro recibido!</h1>
+      <p id="texto-confirmacion">Gracias por tu interés. La persona responsable se pondrá en contacto contigo.</p>
+    </div>
+  </main>
+
+  <div class="pie">
+    Laboratorio Normalista de Investigación Educativa (LabNIE)<br>
+    Escuela Normal Superior del Estado de Baja California Sur
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN
+   Pega aquí la URL de tu implementación de Apps Script (termina en /exec).
+   Instrucciones en apps_script_backend_cuerpos_academicos.gs
+   ============================================================ */
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxW0BeTMnJoAWd_ti4o5RD1_AQ-A1LJAkN_yt8UrYcyEhVaTk1HEEH3Wx5GsCF6rLNTvg/exec';
+
+/* Propuestas institucionales. Para editar nombres, responsables o líneas, cambia solo este bloque. */
+const PROPUESTAS = [
+  {
+    id: 'caef-diversidad',
+    tipo: 'CAEF',
+    nombre: 'Diversidad lingüística, interculturalidad y formación docente',
+    responsable: 'Luis Prezas Vera',
+    lgac: [
+      'Diversidad lingüística, interculturalidad e inclusión en las prácticas de enseñanza y aprendizaje',
+      'Pensamiento narrativo, procesos psicológicos y socioculturales e intervención pedagógica en la formación docente'
+    ],
+    descripcion: 'Estudios centrados en el proceso de formación docente y en las prácticas de enseñanza y aprendizaje en los diferentes niveles educativos. El CAF realiza investigaciones sobre estrategias, técnicas y metodologías didácticas, evaluación y propuestas de intervención pedagógica, incorporando de manera específica el pensamiento narrativo y el análisis de la diversidad lingüística, desde una perspectiva pedagógica, intercultural e inclusiva que considera los procesos cognitivos, afectivos, emocionales, psicológicos y socioculturales propios de toda experiencia educativa.'
+  },
+  {
+    id: 'caef-cartografias',
+    tipo: 'CAEF',
+    nombre: 'Cartografías desiguales, interculturales y bioculturales en la formación docente',
+    responsable: 'Tito Fernando Piñeda Verdugo',
+    lgac: [
+      'Migración, desigualdades socioeducativas y justicia curricular',
+      'Bioculturalidad, conocimientos científicos interculturales y prácticas educativas territorializadas'
+    ],
+    descripcion: 'Busca cartografiar, analizar y visibilizar, mediante estudios colaborativos y vinculantes, las experiencias educativas de comunidades rancheras, pesqueras, migrantes, indígenas y afrodescendientes, en contextos urbanos y rurales, marcadas por condiciones de desigualdad e injusticia curricular, así como sus implicaciones para la formación docente. Asimismo, se propone producir colaborativamente con infancias, juventudes y docencias prácticas educativas territorializadas que pongan en diálogo los saberes comunitarios y el conocimiento científico, con el fin de contribuir a una educación más justa, pertinente y comprometida con el cuidado de la vida.'
+  },
+  {
+    id: 'caef-etica',
+    tipo: 'CAEF',
+    nombre: 'Estudios éticos, sociohistóricos y de género en la formación docente',
+    responsable: 'Andrea Maricela Lira Beltrán',
+    lgac: [
+      'Ética, género, diversidad, vocación e identidades en la formación docente',
+      'Estudios políticos y sociohistóricos de la educación normal'
+    ],
+    descripcion: 'Desarrolla procesos sistemáticos de investigación, reflexión crítica y producción de conocimiento en torno a las dimensiones éticas, sociales, históricas, políticas, culturales y de género que configuran la formación y el ejercicio de la profesión docente, particularmente en el contexto de la educación normal, desde una perspectiva interdisciplinaria, crítica, humanista e incluyente. Busca contribuir a la comprensión y transformación de las prácticas y culturas institucionales, así como al fortalecimiento de una formación docente comprometida con la justicia social, la equidad, la democracia, los derechos humanos y el reconocimiento de la diversidad.'
+  },
+  {
+    id: 'gi-experiencia',
+    tipo: 'GI',
+    nombre: 'Experiencia curricular, identidades e imaginarios sobre la formación docente',
+    responsable: 'Liliana Higuera Miranda',
+    lgac: [
+      'Experiencias, evaluación y tensiones curriculares en la formación docente',
+      'Identidades normalistas, imaginarios sociales y saberes docentes'
+    ],
+    descripcion: 'Busca analizar, desde enfoques comprensivos y colaborativos, cómo estudiantes normalistas, formadores y egresados viven, interpretan y significan el currículo de la formación docente, así como las identidades, los imaginarios sociales y los saberes que construyen en ese proceso. Con ello se busca generar conocimiento y propuestas que contribuyan a la evaluación, la mejora y la transformación de los planes de estudio y de las prácticas de formación en las escuelas normales.'
+  }
+];
+
+const TIPO_TEXTO = { CAEF: 'Cuerpo Académico en Formación', GI: 'Grupo de Interés' };
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* Dibujar tarjetas de propuestas */
+$('propuestas').innerHTML = PROPUESTAS.map(p => `
+  <label class="propuesta">
+    <div class="top">
+      <input type="radio" name="propuesta" value="${p.id}">
+      <div>
+        <span class="tipo ${p.tipo === 'GI' ? 'gi' : 'caef'}">${TIPO_TEXTO[p.tipo]}</span>
+        <h3>${esc(p.nombre)}</h3>
+        <div class="resp">Responsable: ${esc(p.responsable)}</div>
+        <ul>${p.lgac.map((l, i) => `<li><b>LGAC ${i + 1}.</b> ${esc(l)}</li>`).join('')}</ul>
+        <details><summary>Ver descripción</summary><p>${esc(p.descripcion)}</p></details>
+      </div>
+    </div>
+  </label>`).join('');
+
+/* Evitar que abrir "Ver descripción" seleccione la tarjeta */
+document.querySelectorAll('.propuesta summary').forEach(s =>
+  s.addEventListener('click', e => e.stopPropagation()));
+
+/* ---------- Explorador: fichas y comparación ---------- */
+const claseTipo = p => p.tipo === 'GI' ? 'gi' : 'caef';
+let fichaActiva = PROPUESTAS[0].id;
+
+function dibujarPestanas(){
+  $('pestanas').innerHTML = PROPUESTAS.map(p => `
+    <button type="button" role="tab" data-id="${p.id}" aria-selected="${p.id === fichaActiva}">
+      <span class="t ${claseTipo(p)}">${p.tipo === 'GI' ? 'Grupo de Interés' : 'CAEF'}</span>${esc(p.nombre)}
+    </button>`).join('');
+}
+function dibujarFicha(){
+  const p = PROPUESTAS.find(x => x.id === fichaActiva);
+  $('ficha').innerHTML = `
+    <span class="tipo ${claseTipo(p)}">${TIPO_TEXTO[p.tipo]}</span>
+    <h3>${esc(p.nombre)}</h3>
+    <div class="resp">Responsable: ${esc(p.responsable)}</div>
+    <h4>Objetivo y enfoque</h4>
+    <p>${esc(p.descripcion)}</p>
+    <h4>Líneas de Generación y Aplicación del Conocimiento</h4>
+    ${p.lgac.map((l, i) => `<div class="lgac-item"><b>LGAC ${i + 1}</b><span>${esc(l)}</span></div>`).join('')}
+    <button type="button" class="btn-sec" data-elegir="${p.id}">Quiero integrarme a esta propuesta →</button>`;
+}
+function dibujarTabla(){
+  const fila = (titulo, fn) => `<tr><th scope="row">${titulo}</th>${PROPUESTAS.map(p => `<td>${fn(p)}</td>`).join('')}</tr>`;
+  $('tabla-comparar').innerHTML = `
+    <thead><tr><th></th>${PROPUESTAS.map(p => `<th scope="col"><span class="tipo ${claseTipo(p)}">${p.tipo === 'GI' ? 'Grupo de Interés' : 'CAEF'}</span><br>${esc(p.nombre)}</th>`).join('')}</tr></thead>
+    <tbody>
+      ${fila('Responsable', p => esc(p.responsable))}
+      ${fila('LGAC 1', p => esc(p.lgac[0]))}
+      ${fila('LGAC 2', p => esc(p.lgac[1]))}
+      ${fila('Enfoque', p => esc(p.descripcion))}
+      ${fila('', p => `<button type="button" class="btn-mini" data-elegir="${p.id}">Quiero integrarme</button>`)}
+    </tbody>`;
+}
+dibujarPestanas(); dibujarFicha(); dibujarTabla();
+
+$('pestanas').addEventListener('click', e => {
+  const b = e.target.closest('button[data-id]');
+  if (!b) return;
+  fichaActiva = b.dataset.id;
+  dibujarPestanas(); dibujarFicha();
+});
+function cambiarVista(comparar){
+  $('vista-fichas').classList.toggle('oculto', comparar);
+  $('vista-comparar').classList.toggle('oculto', !comparar);
+  $('ver-fichas').setAttribute('aria-selected', String(!comparar));
+  $('ver-comparar').setAttribute('aria-selected', String(comparar));
+}
+$('ver-fichas').addEventListener('click', () => cambiarVista(false));
+$('ver-comparar').addEventListener('click', () => cambiarVista(true));
+
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-elegir]');
+  if (!b) return;
+  const r = document.querySelector(`input[name=propuesta][value="${b.dataset.elegir}"]`);
+  r.checked = true;
+  alCambiarPropuesta();
+  r.closest('.propuesta').scrollIntoView({behavior:'smooth', block:'center'});
+});
+
+const propuestaActual = () => {
+  const r = document.querySelector('input[name=propuesta]:checked');
+  return r ? PROPUESTAS.find(p => p.id === r.value) : null;
+};
+
+function alCambiarPropuesta(){
+  const p = propuestaActual();
+  if (!p) return;
+  $('bloque-participacion').classList.remove('oculto');
+  $('bloque-lgac').classList.remove('oculto');
+  $('bloque-otra').classList.remove('oculto');
+  $('txt-integrante').textContent = p.tipo === 'GI' ? 'Integrante del grupo' : 'Integrante del CAEF';
+
+  $('lgac').innerHTML = p.lgac.map((l, i) => `
+    <label class="opcion"><input type="checkbox" name="lgac" value="LGAC ${i + 1}. ${esc(l)}"> <span><b>LGAC ${i + 1}.</b> ${esc(l)}</span></label>`).join('');
+
+  $('otra').innerHTML = '<option value="">No, por ahora</option>' +
+    PROPUESTAS.filter(o => o.id !== p.id)
+      .map(o => `<option value="${esc(o.nombre)}">${o.tipo === 'GI' ? 'GI' : 'CAEF'} · ${esc(o.nombre)}</option>`).join('');
+  revisarAvisoPTC();
+}
+
+function revisarAvisoPTC(){
+  const p = propuestaActual();
+  const nom = document.querySelector('input[name=nombramiento]:checked');
+  const part = document.querySelector('input[name=participacion]:checked');
+  const aviso = $('aviso-ptc');
+  aviso.classList.add('oculto');
+  if (!p || !nom || !part || p.tipo !== 'CAEF' || part.value !== 'Integrante') return;
+  if (nom.dataset.ptc === 'no'){
+    aviso.textContent = 'Para ser integrante de un Cuerpo Académico ante PRODEP se requiere ser considerado profesor de tiempo completo. Puedes registrarte como colaborador(a) o como integrante del Grupo de Interés.';
+    aviso.classList.remove('oculto');
+  } else if (nom.dataset.ptc === 'interino'){
+    aviso.textContent = 'Un interinato cuenta como tiempo completo solo si tienes al menos cuatro años de antigüedad. La persona responsable lo revisará contigo.';
+    aviso.classList.remove('oculto');
+  }
+}
+
+document.addEventListener('change', e => {
+  if (e.target.name === 'propuesta') alCambiarPropuesta();
+  if (e.target.name === 'nombramiento' || e.target.name === 'participacion') revisarAvisoPTC();
+  if (e.target.classList) e.target.classList.remove('invalido');
+});
+
+/* Validación y envío */
+function mostrarError(msg, el){
+  const box = $('mensaje-error');
+  box.textContent = msg;
+  box.classList.remove('oculto');
+  if (el){
+    el.classList.add('invalido');
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    if (el.focus) el.focus({preventScroll:true});
+  }
+}
+
+$('formulario').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('mensaje-error').classList.add('oculto');
+  document.querySelectorAll('.invalido').forEach(x => x.classList.remove('invalido'));
+
+  const val = id => $(id).value.trim();
+  const radio = n => (document.querySelector(`input[name=${n}]:checked`) || {}).value || '';
+
+  if (!val('nombre')) return mostrarError('Escribe tu nombre completo.', $('nombre'));
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('correo'))) return mostrarError('Escribe un correo electrónico válido.', $('correo'));
+  const tel = val('celular').replace(/\D/g, '');
+  if (tel.length < 10) return mostrarError('Escribe un número de celular de 10 dígitos.', $('celular'));
+  if (!val('sede')) return mostrarError('Selecciona tu sede de adscripción.', $('sede'));
+  if (!val('grado')) return mostrarError('Selecciona tu último grado académico.', $('grado'));
+  if (!radio('nombramiento')) return mostrarError('Indica tu tipo de nombramiento.', $('nombramiento'));
+  if (!radio('perfil')) return mostrarError('Indica si cuentas con Perfil Deseable PRODEP.', $('perfil'));
+  const p = propuestaActual();
+  if (!p) return mostrarError('Elige la propuesta a la que deseas integrarte.', $('propuestas'));
+  if (!radio('participacion')) return mostrarError('Indica tu forma de participación.', $('participacion'));
+  const lgacs = [...document.querySelectorAll('input[name=lgac]:checked')].map(x => x.value);
+  if (!lgacs.length) return mostrarError('Selecciona al menos una línea (LGAC).', $('lgac'));
+  if (!val('tema')) return mostrarError('Describe brevemente el tema o proyecto que aportarías.', $('tema'));
+  if (!$('privacidad').checked) return mostrarError('Para enviar el registro, acepta el uso de tus datos.', $('bloque-privacidad'));
+
+  if (APPS_SCRIPT_URL.indexOf('PEGA_AQUI') > -1){
+    return mostrarError('Este formulario todavía no tiene configurada la URL de Apps Script. Revisa las instrucciones en apps_script_backend_cuerpos_academicos.gs.');
+  }
+
+  const datos = new URLSearchParams({
+    nombre: val('nombre'),
+    correo: val('correo'),
+    celular: tel,
+    sede: val('sede'),
+    grado: val('grado'),
+    nombramiento: radio('nombramiento'),
+    perfil_prodep: radio('perfil'),
+    tipo_propuesta: TIPO_TEXTO[p.tipo],
+    propuesta: p.nombre,
+    responsable: p.responsable,
+    participacion: radio('participacion'),
+    lgac: lgacs.join(' | '),
+    colaboracion_adicional: val('otra'),
+    tema: val('tema'),
+    produccion: val('produccion'),
+    comentarios: val('comentarios')
+  });
+
+  const btn = $('btn-enviar');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+  try{
+    await fetch(APPS_SCRIPT_URL, { method:'POST', mode:'no-cors', body: datos });
+    $('vista-formulario').classList.add('oculto');
+    $('texto-confirmacion').textContent =
+      `Gracias por tu interés en «${p.nombre}». ${p.responsable} se pondrá en contacto contigo.`;
+    $('confirmacion').classList.remove('oculto');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(err){
+    btn.disabled = false;
+    btn.textContent = 'Enviar registro';
+    mostrarError('No se pudo enviar el registro. Revisa tu conexión a internet e intenta de nuevo.');
+  }
+});
+</script>
+</body>
+</html>
